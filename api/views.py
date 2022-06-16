@@ -13,22 +13,36 @@ class StudentAPIView(GetSerializerClassMixin, viewsets.ModelViewSet):
     serializer_class = StudentSerializer
     permission_classes = [AllowAny]
     
-    def get_object(self, queryset=None, **kwargs):
-        id = self.kwargs.get('pk')
-        return get_object_or_404(Student, id=id)
+    # def get_object(self, queryset=None, **kwargs):
+    #     id = self.kwargs.get('pk')
+    #     return get_object_or_404(Student, id=id)
 
     def get_queryset(self):
         return Student.objects.all()
 
     def update(self, request, pk=None):
         
-        user_data = request.data.pop('user')
-        user_obj = User.objects.get(id=pk)
+        user_data = request.data.get('user')
+        # print(user_data)
+        student_obj = Student.objects.get(id=pk)
+        user_obj = User.objects.get(id=student_obj.user.id)
+        print(user_obj)
 
-        serializer = UserSerializer(data=user_data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-        # print(user_obj)
+        
+        user_obj.username = user_data.get('username', user_obj.username)
+        user_obj.email = user_data.get('email', user_obj.email)
+        user_obj.first_name = user_data.get('first_name', user_obj.first_name)
+        user_obj.last_name = user_data.get('last_name', user_obj.last_name)
+        user_obj.save()
+
+        student_obj.semester = request.data.get('semester', student_obj.semester)
+        student_obj.section = request.data.get('section', student_obj.section)
+        student_obj.student_id = request.data.get('student_id', student_obj.student_id)
+        student_obj.save()
+        print(user_obj.last_name)
+
+        serializer = StudentSerializer(data=request.data, partial=True)
+        serializer.is_valid()
         return Response({'data': serializer.data})
 
 # class StudentAPIView(viewsets.ViewSet):

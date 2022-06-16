@@ -24,7 +24,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         # fields = "__all__"
-        fields = ['id', 'username', 'first_name', 'last_name', 'email']
+        fields = ['username', 'first_name', 'last_name', 'email']
 
     # # def update(self, instance, validated_data):
     #     instance.username = validated_data.get('username', instance.username)
